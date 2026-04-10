@@ -1,0 +1,283 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #eef2f7, #f8fafc);
+  margin: 0;
+  padding: 0;
+  color: #1f2937;
+}
+
+.container {
+  width: 85%;
+  max-width: 1100px;
+  margin: 40px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #111827;
+  font-size: 32px;
+}
+
+.buttons,
+.search-box,
+.filters {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+button {
+  margin: 6px;
+  padding: 12px 18px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.search-box input {
+  padding: 12px;
+  width: 280px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-right: 8px;
+}
+
+.filters button {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.filters button:hover {
+  background: #d1d5db;
+}
+
+.top-candidates {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.top-candidates h2 {
+  margin-top: 0;
+  color: #1d4ed8;
+  font-size: 24px;
+}
+
+.top-candidates ul {
+  padding-left: 20px;
+  margin: 10px 0 0 0;
+}
+
+.top-candidates li {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+#results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #111827;
+  font-size: 20px;
+}
+
+.card p {
+  margin: 8px 0;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.score-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.score-high {
+  background: #16a34a;
+}
+
+.score-medium {
+  background: #f59e0b;
+}
+
+.score-low {
+  background: #dc2626;
+}
+
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.summary-card h3 {
+  margin: 0;
+  font-size: 28px;
+  color: #2563eb;
+}
+
+.summary-card p {
+  margin-top: 8px;
+  color: #4b5563;
+  font-size: 15px;
+}
+
+.details-panel {
+  margin-bottom: 25px;
+  padding: 22px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.details-panel h2 {
+  margin-top: 0;
+  color: #c2410c;
+}
+
+.details-panel p {
+  margin: 8px 0;
+  color: #444;
+}
+
+.card {
+  cursor: pointer;
+}
+
+.floating-reset-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+}
+
+.floating-reset-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 25px 0 15px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.meta-label {
+  display: inline-block;
+  background: #e0ecff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #111827;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.card-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 12px 0;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag {
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}

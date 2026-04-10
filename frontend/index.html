@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NJII Patent Matching System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>NJII Patent Matching System</h1>
+
+    <div id="summaryBar" class="summary-bar">
+        <div class="summary-card">
+            <h3 id="totalInventors">0</h3>
+            <p>Total Inventors</p>
+        </div>
+        <div class="summary-card">
+            <h3 id="totalPatents">0</h3>
+            <p>Total Patents</p>
+        </div>
+        <div class="summary-card">
+            <h3 id="topScore">0</h3>
+            <p>Top Fit Score</p>
+        </div>
+        <div class="summary-card">
+            <h3 id="aiPatents">0</h3>
+            <p>AI/ML Patents</p>
+        </div>
+    </div>
+
+    <div class="buttons">
+      <button onclick="loadInventors()">Show Inventors</button>
+      <button onclick="loadPatents()">Show Patents</button>
+      <button onclick="loadRankedInventors()">Show Ranked Inventors</button>
+      <button onclick="discoverInventors()">Discover Inventors</button>
+      <button onclick="importUsptoPatents()">Import USPTO Patents</button>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search patents by keyword" />
+      <button onclick="searchPatents()">Search</button>
+    </div>
+
+    <div class="filters">
+      <button onclick="filterByDomain('All')">All</button>
+      <button onclick="filterByDomain('AI/ML')">AI/ML</button>
+      <button onclick="filterByDomain('Manufacturing')">Manufacturing</button>
+      <button onclick="filterByDomain('Health')">Health</button>
+    </div>
+
+    <div id="topCandidates" class="top-candidates"></div>
+
+    <div id="detailsPanel" class="details-panel" style="display: none;"></div>
+
+    <div id="results"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <button class="floating-reset-btn" onclick="resetView()">Reset View</button>
+</body>
+</html>
