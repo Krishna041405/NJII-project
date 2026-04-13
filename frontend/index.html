@@ -4,138 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NJII Patent Matching System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page-shell">
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
+  <div class="container">
+    <h1>NJII Patent Matching System</h1>
 
-    <header class="topbar">
-      <div class="brand-mark">NJII</div>
-      <div class="topbar-copy">
-        <p class="eyebrow">Patent Intelligence Platform</p>
-        <h1>NJII Venture Discovery Workspace</h1>
-      </div>
-      <button class="ghost-button" onclick="resetView()">Reset Workspace</button>
-    </header>
-
-    <main class="dashboard">
-      <section class="hero-panel">
-        <div class="hero-copy">
-          <p class="eyebrow">Patent Discovery Workspace</p>
-          <h2>Find venture-ready inventors from NJIT patent signals faster.</h2>
-          <p class="hero-text">
-            Search local patent records, sync external patent data, rank inventor fit, and review candidates in one clean workspace.
-          </p>
-          <div class="hero-pills">
-            <span class="hero-pill">NJIT Database</span>
-            <span class="hero-pill">Live Patent Sync</span>
-            <span class="hero-pill">Inventor Ranking</span>
-          </div>
+    <div id="summaryBar" class="summary-bar">
+        <div class="summary-card">
+            <h3 id="totalInventors">0</h3>
+            <p>Total Inventors</p>
         </div>
-
-        <div class="hero-sidecard">
-          <p class="sidecard-label">Quick Start</p>
-          <ol class="hero-steps">
-            <li>Enter a keyword and search.</li>
-            <li>Review patents or inventor matches.</li>
-            <li>Rank candidates and inspect details.</li>
-          </ol>
+        <div class="summary-card">
+            <h3 id="totalPatents">0</h3>
+            <p>Total Patents</p>
         </div>
-      </section>
-
-      <section class="control-panel">
-        <div class="control-layout">
-          <div class="search-panel">
-            <label class="input-label" for="searchInput">Search Keyword</label>
-            <div class="search-row">
-              <input type="text" id="searchInput" placeholder="Try: oncology AI, robotics, diagnostics, manufacturing automation" />
-              <button class="primary-button" onclick="searchPatents()">Search & Sync</button>
-            </div>
-            <p class="helper-text">Search automatically checks the NJIT database and attempts internet patent sync before showing results.</p>
-          </div>
-
-          <div class="control-card">
-            <div class="control-card-header">
-              <p class="eyebrow">Workspace Actions</p>
-              <h3>Choose a view or trigger a sync</h3>
-            </div>
-            <div class="action-grid">
-              <button class="action-button" onclick="loadInventors()">View Inventors</button>
-              <button class="action-button" onclick="loadPatents()">View Patents</button>
-              <button class="action-button" onclick="loadRankedInventors()">Rank Candidates</button>
-              <button class="action-button" onclick="discoverInventors()">Discover Inventors</button>
-              <button class="action-button action-accent" onclick="importUsptoPatents()">Sync NJIT + Internet</button>
-            </div>
-          </div>
+        <div class="summary-card">
+            <h3 id="topScore">0</h3>
+            <p>Top Fit Score</p>
         </div>
-
-        <div class="filter-strip">
-          <span class="filter-label">Focus Areas</span>
-          <button class="filter-chip active" data-domain="All" onclick="filterByDomain('All', this)">All</button>
-          <button class="filter-chip" data-domain="AI/ML" onclick="filterByDomain('AI/ML', this)">AI/ML</button>
-          <button class="filter-chip" data-domain="Manufacturing" onclick="filterByDomain('Manufacturing', this)">Manufacturing</button>
-          <button class="filter-chip" data-domain="Health" onclick="filterByDomain('Health', this)">Health</button>
+        <div class="summary-card">
+            <h3 id="aiPatents">0</h3>
+            <p>AI/ML Patents</p>
         </div>
-      </section>
+    </div>
 
-      <section id="statusBanner" class="status-banner" aria-live="polite"></section>
+    <div class="buttons">
+      <button onclick="loadInventors()">Show Inventors</button>
+      <button onclick="loadPatents()">Show Patents</button>
+      <button onclick="loadRankedInventors()">Show Ranked Inventors</button>
+      <button onclick="discoverInventors()">Discover Inventors</button>
+      <button onclick="importUsptoPatents()">Import USPTO Patents</button>
+    </div>
 
-      <section id="summaryBar" class="summary-grid">
-        <article class="summary-card">
-          <p class="summary-label">Inventors</p>
-          <div class="summary-value-row">
-            <h3 id="totalInventors">--</h3>
-          </div>
-          <span class="summary-footnote" id="inventorsFootnote">Profiles in workspace</span>
-        </article>
-        <article class="summary-card">
-          <p class="summary-label">Patents</p>
-          <div class="summary-value-row">
-            <h3 id="totalPatents">--</h3>
-          </div>
-          <span class="summary-footnote" id="patentsFootnote">Tracked opportunities</span>
-        </article>
-        <article class="summary-card">
-          <p class="summary-label">Top Fit Score</p>
-          <div class="summary-value-row">
-            <h3 id="topScore">--</h3>
-          </div>
-          <span class="summary-footnote" id="scoreFootnote">Highest inventor rank</span>
-        </article>
-        <article class="summary-card">
-          <p class="summary-label">AI/ML Patents</p>
-          <div class="summary-value-row">
-            <h3 id="aiPatents">--</h3>
-          </div>
-          <span class="summary-footnote" id="aiPatentsFootnote">Strategic portfolio count</span>
-        </article>
-      </section>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search patents by keyword" />
+      <button onclick="searchPatents()">Search</button>
+    </div>
 
-      <section class="workspace-grid">
-        <div class="workspace-column">
-          <div id="topCandidates" class="workspace-panel top-candidates"></div>
-          <div id="detailsPanel" class="workspace-panel details-panel" style="display: none;"></div>
-        </div>
+    <div class="filters">
+      <button onclick="filterByDomain('All')">All</button>
+      <button onclick="filterByDomain('AI/ML')">AI/ML</button>
+      <button onclick="filterByDomain('Manufacturing')">Manufacturing</button>
+      <button onclick="filterByDomain('Health')">Health</button>
+    </div>
 
-        <div class="workspace-column workspace-main">
-          <div class="results-header">
-            <div>
-              <p class="eyebrow">Results Workspace</p>
-              <h2 id="resultsHeading">Start with a search or choose a view</h2>
-            </div>
-            <div id="resultsMeta" class="results-meta">No active dataset</div>
-          </div>
-          <div id="results" class="results-grid"></div>
-        </div>
-      </section>
-    </main>
+    <div id="topCandidates" class="top-candidates"></div>
+
+    <div id="detailsPanel" class="details-panel" style="display: none;"></div>
+
+    <div id="results"></div>
   </div>
 
   <script src="script.js"></script>
+  <button class="floating-reset-btn" onclick="resetView()">Reset View</button>
 </body>
 </html>
