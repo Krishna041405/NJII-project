@@ -1,4 +1,4 @@
-#!/Users/krishna/Documents/patent-matching-project/backend/venv/bin/python3
+#!/Users/krishna/Documents/NJII-project/backend/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
