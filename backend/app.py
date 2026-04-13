@@ -1,8 +1,17 @@
-from fastapi import FastAPI
+from typing import Any, Callable
+
+import requests
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from database import get_db_connection
+from database import (
+    discover_inventors_by_keyword,
+    filter_patents_by_domain,
+    get_ranked_inventors_data,
+    list_inventors,
+    list_patents,
+)
 from scoring import calculate_fit_score
-from ingestion.uspto_loader import ingest_uspto_data
+from ingestion.uspto_loader import ingest_uspto_data, search_local_patents, sync_patents_for_keyword
 
 app = FastAPI(title="NJII Patent Matching API")
 
@@ -14,6 +23,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def _run_backend_call(operation: Callable[[], Any], service_name: str) -> Any:
+    try:
+        return operation()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=f"{service_name} is not configured: {exc}") from exc
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"{service_name} is unavailable. Check Supabase connectivity and credentials.",
+        ) from exc
+
+
 @app.get("/")
 def home():
     return {"message": "API is running"}
@@ -21,98 +43,32 @@ def home():
 
 @app.get("/inventors")
 def get_inventors():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM inventors")
-    inventors = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-
-    return inventors
+    return _run_backend_call(list_inventors, "Inventor data service")
 
 
 @app.get("/patents")
 def get_patents():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM patents")
-    patents = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-
-    return patents
+    return _run_backend_call(list_patents, "Patent data service")
 
 @app.get("/search")
-def search_patents(keyword: str):
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
+def search_patents(keyword: str, auto_sync: bool = True):
+    if auto_sync:
+        return _run_backend_call(lambda: sync_patents_for_keyword(keyword), "Patent sync service")
 
-    query = """
-    SELECT * FROM patents
-    WHERE title LIKE %s OR technology_domain LIKE %s
-    """
-    search_value = f"%{keyword}%"
-
-    cursor.execute(query, (search_value, search_value))
-    results = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-
-    return results
+    return _run_backend_call(lambda: search_local_patents(keyword), "Patent search service")
 
 @app.get("/filter")
 def filter_patents(domain: str):
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    if domain == "All":
-        cursor.execute("SELECT * FROM patents")
-    else:
-        query = "SELECT * FROM patents WHERE technology_domain = %s"
-        cursor.execute(query, (domain,))
-
-    patents = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-
-    return patents
+    return _run_backend_call(lambda: filter_patents_by_domain(domain), "Patent filter service")
 
 @app.get("/ranked-inventors")
 def get_ranked_inventors():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    query = """
-    SELECT 
-        i.inventor_id,
-        i.first_name,
-        i.last_name,
-        COUNT(pi.patent_id) AS patent_count,
-        GROUP_CONCAT(p.technology_domain) AS technology_domains
-    FROM inventors i
-    LEFT JOIN patent_inventors pi ON i.inventor_id = pi.inventor_id
-    LEFT JOIN patents p ON pi.patent_id = p.patent_id
-    GROUP BY i.inventor_id, i.first_name, i.last_name
-    """
-
-    cursor.execute(query)
-    inventors = cursor.fetchall()
-
+    inventors = _run_backend_call(get_ranked_inventors_data, "Inventor ranking service")
     results = []
 
     for inventor in inventors:
         patent_count = inventor["patent_count"]
-
-        if inventor["technology_domains"]:
-            technology_domains = inventor["technology_domains"].split(",")
-        else:
-            technology_domains = []
+        technology_domains = inventor["technology_domains"] or []
 
         fit_score = calculate_fit_score(patent_count, technology_domains)
 
@@ -124,42 +80,19 @@ def get_ranked_inventors():
             "fit_score": fit_score
         })
 
-    cursor.close()
-    db.close()
-
     results.sort(key=lambda x: x["fit_score"], reverse=True)
     return results
 
 @app.get("/discover-inventors")
 def discover_inventors(keyword: str):
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    query = """
-    SELECT DISTINCT
-        i.inventor_id,
-        i.first_name,
-        i.last_name,
-        i.affiliation,
-        i.email,
-        p.title AS patent_title,
-        p.technology_domain
-    FROM patents p
-    JOIN patent_inventors pi ON p.patent_id = pi.patent_id
-    JOIN inventors i ON pi.inventor_id = i.inventor_id
-    WHERE p.title LIKE %s OR p.technology_domain LIKE %s
-    """
-
-    search_value = f"%{keyword}%"
-    cursor.execute(query, (search_value, search_value))
-    results = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-
-    return results
+    return _run_backend_call(lambda: discover_inventors_by_keyword(keyword), "Inventor discovery service")
 
 @app.post("/ingest-uspto")
 def ingest_uspto(keyword: str):
-    result = ingest_uspto_data(keyword)
+    result = _run_backend_call(lambda: ingest_uspto_data(keyword), "USPTO ingestion service")
     return result
+
+
+@app.post("/sync-patents")
+def sync_patents(keyword: str):
+    return _run_backend_call(lambda: sync_patents_for_keyword(keyword), "Patent sync service")
